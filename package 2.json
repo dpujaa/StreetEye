@@ -1,0 +1,20 @@
+{
+  "name": "streeteye",
+  "version": "1.0.0",
+  "description": "HackDavis 2025 Project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dpujaa/StreetEye.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dpujaa/StreetEye/issues"
+  },
+  "homepage": "https://github.com/dpujaa/StreetEye#readme"
+}
