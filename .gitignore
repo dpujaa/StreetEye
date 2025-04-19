@@ -23,3 +23,12 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+
+*.mp4
+*.mov
+*.h5
+*.pt
+*.zip
+__pycache__/
+*.DS_Store
+backend/static/flagged_frames/
