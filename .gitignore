@@ -1,0 +1,10 @@
+*.h5
+*.avi
+*.mp4
+*.mkv
+data/
+backend/models/
+backend/static/sample_test.mp4
+static/flagged_frames/
+.venv/
+__pycache__/
