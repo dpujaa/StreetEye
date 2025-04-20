@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>StreetEye — AI for Civic Safety</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: #0d0d0d;
+      color: #e0f0ff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #4ea8de;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #a6c9ff;
+      margin-top: 2rem;
+      text-align: center;
+    }
+
+    h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #91b4ff;
+      margin-top: 1.5rem;
+      text-align: center;
+    }
+
+    p {
+      font-size: 1rem;
+      text-align: center;
+      margin: 0.5rem 0;
+    }
+
+    #live-feed {
+      border: 2px solid #4ea8de;
+      border-radius: 12px;
+      margin: 1rem 0;
+      width: 480px;
+      max-width: 90vw;
+    }
+
+    form {
+      margin-top: 1rem;
+    }
+
+    input[type="file"],
+    button {
+      margin: 0.5rem;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: none;
+    }
+
+    button {
+      background-color: #4ea8de;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #378bcb;
+    }
+
+    .thumbnail {
+      width: 150px;
+      border-radius: 10px;
+      margin-bottom: 0.3rem;
+    }
+
+    #frames {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .frame {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #1b1b1b;
+      border: 1px solid #444;
+      border-radius: 10px;
+      padding: 0.75rem;
+      width: 180px;
+      box-shadow: 0 0 6px rgba(78, 168, 222, 0.3);
+    }
+
+    .frame p {
+      font-size: 0.9rem;
+      color: #cde7ff;
+      line-height: 1.4;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎥 StreetEye — AI for Civic Safety</h1>
+
+  <h2>Live Camera Feed</h2>
+  <img id="live-feed" src="{{ url_for('video_feed') }}" alt="Live Feed"/>
+
+  <h2>Upload Video for Analysis</h2>
+  <form id="upload-form">
+    <input type="file" id="video-input" name="video" accept="video/mp4" required />
+    <button type="submit" id="submit-btn">Upload & Analyze</button>
+  </form>
+
+  <h2>Status</h2>
+  <p id="status">No analysis yet.</p>
+
+  <h3>Rights Summary</h3>
+  <p id="summary">—</p>
+
+  <div id="frames"></div>
+
+  <script>
+    document.getElementById("upload-form").onsubmit = async function (e) {
+      document.getElementById("submit-btn").disabled = true;
+      document.getElementById("submit-btn").innerText = "Loading";
+      e.preventDefault();
+      const formData = new FormData();
+      const video = document.getElementById("video-input").files[0];
+      formData.append("video", video);
+
+      const res = await fetch("/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      document.getElementById("status").textContent = data.status;
+      document.getElementById("summary").textContent = data.summary;
+
+      const framesDiv = document.getElementById("frames");
+      framesDiv.innerHTML = "";
+
+      data.flags.forEach((flag) => {
+        const container = document.createElement("div");
+        container.className = "frame";
+
+        const img = document.createElement("img");
+        img.src = `/static/flagged_frames/${flag.filename}`;
+        img.className = "thumbnail";
+
+        const seconds = (Number(flag.timestamp) / 1000).toFixed(3);
+        const text = document.createElement("p");
+        text.textContent = `🕒 ${seconds}s | 📍 ${flag.gps} | ⚠️ ${flag.severity}`;
+
+        container.appendChild(img);
+        container.appendChild(text);
+        framesDiv.appendChild(container);
+      });
+    };
+  </script>
+</body>
+</html>
