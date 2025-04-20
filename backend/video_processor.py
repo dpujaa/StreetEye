@@ -62,5 +62,6 @@ def generate_live_frames():
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
 if __name__ == '__main__':
-    flags = process_video('../../static/static/sample_test.mp4', '../../static/static/flagged_frames')
+    flags = process_video('static/sample_test.mp4', 'static/flagged_frames')
     print("Flagged frames:", flags)
+
