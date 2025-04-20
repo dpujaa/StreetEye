@@ -3,8 +3,8 @@ import os
 
 
 def batch_process_videos():
-    folder_path = "../../static/static/sample_batch"
-    output_path = "../../static/static/flagged_frames"
+    folder_path = "static/sample_batch"
+    output_path = "static/flagged_frames"
     results = []
 
     for filename in os.listdir(folder_path):
