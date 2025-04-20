@@ -1,0 +1,838 @@
+#Only thing wrong is that images are not showing up but we can fix later
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StreetEye — AI for Civic Safety</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #3b82f6;
+      --primary-dark: #2563eb;
+      --secondary: #64748b;
+      --accent: #0ea5e9;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --background: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --text: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --border: rgba(148, 163, 184, 0.1);
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--background), #1e293b);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 1000px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .glass-panel {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      padding: 2.5rem;
+      margin-bottom: 2rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .glass-panel:hover {
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    h1 {
+      font-size: 2.75rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.5rem;
+      position: relative;
+      display: inline-block;
+      animation: titleFade 1s ease-in-out;
+    }
+
+    h1::after {
+      content: "";
+      position: absolute;
+      bottom: -8px;
+      left: 25%;
+      width: 50%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 3px;
+    }
+
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      font-weight: 500;
+      margin-top: 0.75rem;
+    }
+
+    .upload-section {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (min-width: 768px) {
+      .upload-section {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .file-upload {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(15, 23, 42, 0.3);
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .file-upload:hover {
+      border-color: var(--primary);
+      background: rgba(15, 23, 42, 0.5);
+    }
+
+    .file-upload svg {
+      width: 48px;
+      height: 48px;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+
+    .file-upload p {
+      color: var(--text-secondary);
+      text-align: center;
+    }
+
+    .file-upload input {
+      display: none;
+    }
+
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 1rem 1.5rem;
+      font-weight: 600;
+      font-size: 1rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    button:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    }
+
+    button.secondary {
+      background: var(--secondary);
+    }
+
+    button.secondary:hover {
+      background: #475569;
+      box-shadow: 0 4px 12px rgba(100, 116, 139, 0.2);
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 1rem;
+      border-radius: var(--radius);
+      font-weight: 600;
+      margin: 1.5rem 0;
+      background: rgba(15, 23, 42, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .status-indicator.safe {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .status-indicator.warning {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .status-indicator .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--secondary);
+    }
+
+    .status-indicator.safe .dot {
+      background: var(--success);
+      box-shadow: 0 0 8px var(--success);
+      animation: pulse 2s infinite;
+    }
+
+    .status-indicator.warning .dot {
+      background: var(--danger);
+      box-shadow: 0 0 8px var(--danger);
+      animation: pulse 1s infinite;
+    }
+
+    .summary-section {
+      background: rgba(15, 23, 42, 0.3);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-left: 4px solid var(--primary);
+    }
+
+    .summary-section h3 {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      color: var(--primary);
+    }
+
+    .summary-content {
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .flagged-frames {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    @media (min-width: 640px) {
+      .flagged-frames {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .flagged-frames {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .frame {
+      background: rgba(15, 23, 42, 0.3);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      animation: fadeSlideUp 0.6s ease-out;
+    }
+
+    .frame:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .frame-image {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+      border-radius: var(--radius) var(--radius) 0 0;
+      transition: transform 0.3s ease;
+    }
+
+    .frame:hover .frame-image {
+      transform: scale(1.05);
+    }
+
+    .frame-details {
+      padding: 1rem;
+    }
+
+    .frame-details p {
+      margin: 0.5rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .severity {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .severity.high {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+    }
+
+    .severity.medium {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+    }
+
+    .severity.low {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+    }
+
+    .options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 2rem 0;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 26px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(100, 116, 139, 0.2);
+      transition: .4s;
+      border-radius: 34px;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .toggle-slider {
+      background-color: var(--primary);
+    }
+
+    input:checked + .toggle-slider:before {
+      transform: translateX(24px);
+    }
+
+    .download-btn {
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .download-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .video-preview {
+      width: 100%;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 1.5rem 0;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    video {
+      width: 100%;
+      display: block;
+    }
+
+    #loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(59, 130, 246, 0.1);
+      border-left-color: var(--primary);
+      border-radius: 50%;
+      margin: 1rem 0;
+      animation: spin 1s linear infinite;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 3rem;
+      padding: 1.5rem;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      max-width: 700px;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: var(--radius);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.4s ease;
+      z-index: 1000;
+    }
+
+    #toast.success {
+      border-left: 4px solid var(--success);
+    }
+
+    #toast.error {
+      border-left: 4px solid var(--danger);
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.6; }
+      100% { opacity: 1; }
+    }
+
+    @keyframes fadeSlideUp {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes titleFade {
+      0% { opacity: 0; transform: translateY(-10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>StreetEye — AI for Civic Safety</h1>
+      <p class="subtitle">Real-time monitoring for transparency and accountability</p>
+    </header>
+
+    <div class="glass-panel">
+      <div class="upload-section">
+        <label class="file-upload" for="videoFile">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+          </svg>
+          <p>Drag & drop video file or click to browse</p>
+          <input type="file" id="videoFile" accept="video/*" />
+        </label>
+
+        <div class="actions">
+          <button id="uploadBtn" onclick="uploadVideo()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Upload & Analyze
+          </button>
+          <button class="secondary" onclick="runBatch()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            Run Full Dataset Analysis
+          </button>
+        </div>
+      </div>
+
+      <div id="loading" style="display: none;">
+        <p>Analyzing video footage with AI...</p>
+        <div class="spinner"></div>
+        <p>This may take a moment</p>
+      </div>
+
+      <div id="status-container" style="display: none;">
+        <div class="status-indicator" id="status">
+          <span class="dot"></span>
+          <span>Analyzing...</span>
+        </div>
+      </div>
+
+      <div id="summary-container" style="display: none;">
+        <div class="summary-section">
+          <h3>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            Gemini-Powered Summary
+          </h3>
+          <div class="summary-content" id="summary"></div>
+        </div>
+      </div>
+
+      <div class="video-preview" id="videoPreview" style="display: none;"></div>
+
+      <div id="frames-container" style="display: none;">
+        <h2>Flagged Incidents</h2>
+        <div class="flagged-frames" id="frames"></div>
+      </div>
+
+      <div class="options" id="options-container" style="display: none;">
+        <div class="toggle">
+          <label class="toggle-switch">
+            <input type="checkbox" id="autoBackup" checked>
+            <span class="toggle-slider"></span>
+          </label>
+          <span>Auto-backup to Cloud</span>
+        </div>
+
+        <div class="download-btn" onclick="downloadReport()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          Download Report
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <p>StreetEye empowers transparency and justice through real-time AI monitoring. Our mission is to create safer communities through accountability and data-driven insights.</p>
+    </footer>
+  </div>
+
+  <div id="toast"></div>
+
+  <script>
+    // File upload visual feedback
+    const fileUpload = document.querySelector('.file-upload');
+    const fileInput = document.getElementById('videoFile');
+
+    fileUpload.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      fileUpload.style.borderColor = 'var(--primary)';
+      fileUpload.style.background = 'rgba(15, 23, 42, 0.5)';
+    });
+
+    fileUpload.addEventListener('dragleave', () => {
+      fileUpload.style.borderColor = 'var(--border)';
+      fileUpload.style.background = 'rgba(15, 23, 42, 0.3)';
+    });
+
+    fileUpload.addEventListener('drop', (e) => {
+      e.preventDefault();
+      fileUpload.style.borderColor = 'var(--border)';
+      fileUpload.style.background = 'rgba(15, 23, 42, 0.3)';
+
+      if (e.dataTransfer.files.length) {
+        fileInput.files = e.dataTransfer.files;
+        const fileName = e.dataTransfer.files[0].name;
+        updateFileName(fileName);
+      }
+    });
+
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files.length) {
+        const fileName = fileInput.files[0].name;
+        updateFileName(fileName);
+      }
+    });
+
+    function updateFileName(name) {
+      const fileText = document.querySelector('.file-upload p');
+      fileText.textContent = name;
+    }
+
+    // Main functionality
+    let lastResponse = {};
+
+    function showToast(msg, type = 'success') {
+      const toast = document.getElementById("toast");
+      toast.textContent = msg;
+      toast.className = type;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    function uploadVideo() {
+      const input = document.getElementById("videoFile");
+      const file = input.files[0];
+      if (!file) return showToast("Please select a video file first.", "error");
+
+      const formData = new FormData();
+      formData.append("video", file);
+
+      document.getElementById("loading").style.display = "block";
+      document.getElementById("frames-container").style.display = "none";
+      document.getElementById("summary-container").style.display = "none";
+      document.getElementById("status-container").style.display = "none";
+      document.getElementById("videoPreview").style.display = "none";
+      document.getElementById("options-container").style.display = "none";
+
+      // Simulate API call (replace with actual endpoint)
+      setTimeout(() => {
+        // Simulate response data
+        const data = {
+          status: Math.random() > 0.5 ? "SAFE" : "⚠️ Misconduct Detected",
+          summary: "The analyzed footage shows an interaction between police officers and civilians at a traffic stop. Officers maintained professional conduct throughout the encounter, following proper protocols for identification and communication. No excessive force or misconduct was detected in this footage.",
+          flags: [
+            {
+              frame: "frame1.jpg",
+              timestamp: "00:01:23",
+              gps: "37.7749° N, 122.4194° W",
+              severity: "low"
+            },
+            {
+              frame: "frame2.jpg",
+              timestamp: "00:02:45",
+              gps: "37.7749° N, 122.4194° W",
+              severity: "medium"
+            },
+            {
+              frame: "frame3.jpg",
+              timestamp: "00:03:12",
+              gps: "37.7749° N, 122.4194° W",
+              severity: "high"
+            }
+          ]
+        };
+
+        document.getElementById("loading").style.display = "none";
+        lastResponse = data;
+
+        // Update status
+        const statusContainer = document.getElementById("status-container");
+        const statusElement = document.getElementById("status");
+        statusContainer.style.display = "block";
+
+        if (data.status.includes("Misconduct")) {
+          statusElement.className = "status-indicator warning";
+          statusElement.innerHTML = `<span class="dot"></span><span>${data.status}</span>`;
+        } else {
+          statusElement.className = "status-indicator safe";
+          statusElement.innerHTML = `<span class="dot"></span><span>${data.status}</span>`;
+        }
+
+        // Update summary
+        document.getElementById("summary-container").style.display = "block";
+        document.getElementById("summary").innerText = data.summary;
+
+        // Render video preview
+        document.getElementById("videoPreview").style.display = "block";
+        document.getElementById("videoPreview").innerHTML = `
+          <video controls>
+            <source src="${URL.createObjectURL(file)}" type="${file.type}">
+            Your browser does not support video.
+          </video>
+        `;
+
+        // Render flagged frames
+        renderFrames(data.flags);
+        document.getElementById("frames-container").style.display = "block";
+
+        // Show options
+        document.getElementById("options-container").style.display = "flex";
+
+        showToast("✅ Analysis complete");
+      }, 2000);
+    }
+
+    function runBatch() {
+      document.getElementById("loading").style.display = "block";
+      document.getElementById("frames-container").style.display = "none";
+      document.getElementById("summary-container").style.display = "none";
+      document.getElementById("status-container").style.display = "none";
+      document.getElementById("videoPreview").style.display = "none";
+      document.getElementById("options-container").style.display = "none";
+
+      // Simulate batch analysis
+      setTimeout(() => {
+        const data = {
+          status: "⚠️ Misconduct Detected",
+          summary: "Batch analysis of 24 videos complete. 3 videos flagged for potential misconduct. The most severe incident occurred at 14:23 on Main Street, showing potential excessive force during an arrest. All flagged incidents have been automatically backed up to secure cloud storage and are ready for review.",
+          flags: [
+            {
+              frame: "batch1.jpg",
+              timestamp: "14:23:45",
+              gps: "34.0522° N, 118.2437° W",
+              severity: "high"
+            },
+            {
+              frame: "batch2.jpg",
+              timestamp: "15:12:33",
+              gps: "34.0522° N, 118.2437° W",
+              severity: "medium"
+            },
+            {
+              frame: "batch3.jpg",
+              timestamp: "16:45:12",
+              gps: "34.0522° N, 118.2437° W",
+              severity: "medium"
+            }
+          ]
+        };
+
+        document.getElementById("loading").style.display = "none";
+        lastResponse = data;
+
+        // Update status
+        const statusContainer = document.getElementById("status-container");
+        const statusElement = document.getElementById("status");
+        statusContainer.style.display = "block";
+
+        if (data.status.includes("Misconduct")) {
+          statusElement.className = "status-indicator warning";
+          statusElement.innerHTML = `<span class="dot"></span><span>${data.status}</span>`;
+        } else {
+          statusElement.className = "status-indicator safe";
+          statusElement.innerHTML = `<span class="dot"></span><span>${data.status}</span>`;
+        }
+
+        // Update summary
+        document.getElementById("summary-container").style.display = "block";
+        document.getElementById("summary").innerText = data.summary;
+
+        // Render flagged frames
+        renderFrames(data.flags);
+        document.getElementById("frames-container").style.display = "block";
+
+        // Show options
+        document.getElementById("options-container").style.display = "flex";
+
+        showToast("✅ Batch analysis complete");
+      }, 3000);
+    }
+
+    function renderFrames(frames) {
+  const container = document.getElementById("frames");
+  container.innerHTML = "";
+
+  frames.forEach((f) => {
+    const div = document.createElement("div");
+    div.className = "frame";
+    div.innerHTML = `
+      <img class="frame-image" src="http://127.0.0.1:5000/static/flagged_frames/${f.frame}" alt="Flagged incident" />
+      <div class="frame-details">
+        <p>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          ${f.timestamp}
+        </p>
+        <p>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          ${f.gps}
+        </p>
+        <p>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          Severity: <span class="severity ${f.severity}">${f.severity}</span>
+        </p>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+
+    function downloadReport() {
+      showToast("Report downloaded successfully");
+
+      // In a real application, this would generate and download a PDF or other report format
+      console.log("Downloading report for:", lastResponse);
+    }
+  </script>
+</body>
+</html>
